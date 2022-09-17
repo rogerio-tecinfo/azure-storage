@@ -11,7 +11,7 @@ resource "azurerm_virtual_network" "vnet" {
     address_space       = [var.vnetaddress_space]
     location            = var.location
     resource_group_name = var.resourcegroup1
-
+    depends_on = [azurerm_resource_group.resourcegroup]
 }
 
 # Create subnet
@@ -29,6 +29,7 @@ resource "azurerm_public_ip" "publicip" {
     resource_group_name          = var.resourcegroup1
     allocation_method            = "Dynamic"
     sku                          = var.publicip_sku
+    depends_on = [azurerm_resource_group.resourcegroup]
 
 }
 
@@ -49,7 +50,7 @@ resource "azurerm_network_security_group" "nsg" {
         source_address_prefix      = "*"
         destination_address_prefix = "*"
     }
-
+   depends_on = [azurerm_resource_group.resourcegroup]
 }
 
 # Create network interface with Internal and Public IP
@@ -64,7 +65,7 @@ resource "azurerm_network_interface" "nic" {
         private_ip_address_allocation = "Dynamic"
         public_ip_address_id          = azurerm_public_ip.publicip.id
     }
-
+  depends_on = [azurerm_resource_group.resourcegroup]
 }
 
 # Connect the security group to the network interface
@@ -99,9 +100,7 @@ resource "azurerm_windows_virtual_machine" "name" {
     admin_password = var.password
 #    disable_password_authentication = true
     
-    depends_on = [
-    azurerm_resource_group.resourcegroup,
-  ]
+    depends_on = [azurerm_resource_group.resourcegroup]
 
 }
 
@@ -113,7 +112,7 @@ resource "azurerm_storage_account" "storage_accountname" {
   account_tier             = "Standard"
   account_replication_type = "GRS"
   account_kind = "BlobStorage"
-
+  depends_on = [azurerm_resource_group.resourcegroup ]
   tags = {
     environment = "staging"
   }
@@ -123,28 +122,22 @@ resource "azurerm_storage_account" "storage_accountname" {
 resource "azurerm_storage_container" "storage_container" {
   name                  = var.storage_container
   storage_account_name  = var.storage_accountname
-  container_access_type = "private"
+  container_access_type = "blob"
+  depends_on = [azurerm_storage_account.storage_accountname]
 }
 
 # Create Storage Share 
-resource "azurerm_storage_share" "storage_share" {
-  name                 = var.storage_share
-  storage_account_name = var.storage_accountname
-  quota                = 50 
-  acl {
-    id = "MTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTI"
+#   resource "azurerm_storage_share" "storage_share" {
+#    name                 = var.storage_share
+#    storage_account_name = var.storage_accountname
+#    quota                = 50 
+#    depends_on           = [azurerm_storage_account.storage_accountname]
+# }
 
-    access_policy {
-      permissions = "rwdl"
-      start       = "2022-09-16T08:00:00.0000000Z"
-      expiry      = "2019-10-16T10:00:00.0000000Z"
-    }
-  }
-}
-
-# Create Storage Share Directory
+# # Create Storage Share Directory
 resource "azurerm_storage_share_directory" "storage_share_directory" {
   name                 = var.storage_share_directory
   share_name           = var.storage_share
   storage_account_name = var.storage_accountname
+  depends_on           = [azurerm_storage_container.storage_container]
 }

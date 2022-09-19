@@ -1,7 +1,7 @@
 variable "resourcegroup" {
-  type        = list
+  type        = list(any)
   description = "Resource Group used for all resources."
-  default     = ["az104-07-rg0","az104-07-rg1"]
+  default     = ["az104-07-rg0", "az104-07-rg1"]
 }
 
 variable "resourcegroup1" {
@@ -110,42 +110,53 @@ variable "nsg" {
 variable "user" {
   type        = string
   description = "User Name to connect on the VM."
-  default     = "azuser"
+  default     = "lab.azuser"
 }
 
 variable "password" {
   type        = string
   description = "password to connect on the VM."
-  default     = "azuser@123"
+  default     = "Q1w2e3r4t5%"
 }
 
 variable "location" {
   type        = string
   description = "Azure region used for all resources"
-  default = "EastUS 2"
+  default     = "eastus2"
 }
 
 variable "storage_accountname" {
   type        = string
   description = "Description the storage account name"
-  default = "az10407rg1"
+  default     = "az10407rg1rsp1906202210h"
 }
 
 variable "storage_container" {
   type        = string
   description = "Description the storage account name"
-  default = "az104-07-container"
+  default     = "az104-07-container"
 }
 
 variable "storage_share" {
   type        = string
   description = "Description the storage share name"
-  default = "az104-07"
+  default     = "az104-07"
 }
 
 variable "storage_share_directory" {
   type        = string
   description = "Description the storage share name"
-  default = "az104-07-share"
+  default     = "az104-07-share"
 }
 
+variable "storage_blob" {
+  type        = string
+  description = "Description the storage share name"
+  default     = "az104-07-blob"
+}
+
+variable "license" {
+  type        = string
+  description = "Description the storage share name"
+  default     = "license"
+}
